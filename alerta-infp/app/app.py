@@ -38,9 +38,9 @@ def main():
         while(1):
             host = 'http://alerta.infp.ro/'
             response = requests.get(host) 
-            key = None
+            key = 'gdg4234fewr4243'
             if key:
-                messages = SSEClient(f'{host}server.php')
+                 messages = SSEClient(f'{host}server.php?keyto={key.groups()[0]}')
                 for msg in messages:
                     try:
                         if(msg.data):
