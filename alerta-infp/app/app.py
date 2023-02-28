@@ -37,7 +37,8 @@ def main():
 
         while(1):
             host = 'http://alerta.infp.ro/'
-            response = requests.get(host)  
+            response = requests.get(host) 
+            key = None
             if key:
                 messages = SSEClient(f'{host}server.php')
                 for msg in messages:
