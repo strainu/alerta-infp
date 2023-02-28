@@ -37,9 +37,9 @@ def main():
             try:
                 host = 'http://alerta.infp.ro/'
                 response = requests.get(host)    
-                key = re.search(r"(?sm)EventSource\('server\.php\?keyto=([a-z0-9]+)'\);", response.text)
+                
                 if key:
-                    messages = SSEClient(f'{host}server.php?keyto={key.groups()[0]}')
+                    messages = SSEClient(f'{host}server.php')
                     for msg in messages:
                         try:
                             if msg.data:
