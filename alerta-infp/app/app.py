@@ -1,5 +1,8 @@
-import math, requests, re, json, logging, pathlib
-
+import math
+import requests
+import json
+import logging
+import pathlib
 import paho.mqtt.client as mqtt
 from sseclient import SSEClient
 
@@ -17,8 +20,7 @@ def main():
 
         logger = logging.getLogger()
         handler = logging.StreamHandler()
-        formatter = logging.Formatter(
-                '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+        formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         logger.setLevel(logging._nameToLevel[config['LOG_LEVEL']])
@@ -35,39 +37,35 @@ def main():
         mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain = True, qos = 0)
         mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
 
-        while(1):
-            host = 'http://alerta.infp.ro/'
-            response = requests.get(host)    
-            key = re.search(r"(?sm)EventSource\('server\.php\?keyto=([a-z0-9]+)'\);", response.text)
-            if key:
-                messages = SSEClient(f'{host}server.php?keyto={key.groups()[0]}')
-                for msg in messages:
-                    try:
-                        if(msg.data):
-                            message = json.loads(msg.data)
-                            if('err' in message):
-                                logger.info('Refreshing connection')
-                                break;
-                            else:
-                                magnitude = float(message["mag"])
-                                earthquake = 'ON' if magnitude >= 1. else 'OFF'
-                                seconds = float(message["sec"])
+        host = 'http://alerta.infp.ro/'
+        messages = SSEClient(f'{host}server.php?permanent=1')
 
-                                logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
+        for msg in messages:
+            try:
+                if(msg.data):
+                    message = json.loads(msg.data)
+                    if('err' in message):
+                        logger.info('Refreshing connection')
+                        break
+                    else:
+                        magnitude = float(message["mag"])
+                        earthquake = 'ON' if magnitude >= 1. else 'OFF'
+                        seconds = float(message["sec"])
 
-                                mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
-                                logger.info(f'Magnitude = {magnitude}')
-                                
-                                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
-                                logger.info(f'earthquake = {earthquake}')
-                                
-                                mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
-                                logger.info(f'seconds = {seconds}')
+                        logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
-                    except Exception as e:
-                        logger.error(e)
-            else:
-                logger.error('Failed to get server connection key')
+                        mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
+                        logger.info(f'Magnitude = {magnitude}')
+                        
+                        mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
+                        logger.info(f'earthquake = {earthquake}')
+                        
+                        mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
+                        logger.info(f'seconds = {seconds}')
+
+            except Exception as e:
+                logger.error(e)
+
     except Exception as e:
         logger.error(e)
 
