@@ -51,6 +51,7 @@ def main():
                         magnitude = float(message["mag"])
                         earthquake = 'ON' if magnitude >= 1. else 'OFF'
                         seconds = float(message["sec"])
+                        heart = message["heart"]
 
                         logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
@@ -60,8 +61,10 @@ def main():
                         mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
                         logger.info(f'earthquake = {earthquake}')
                         
+                        
                         mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
                         logger.info(f'seconds = {seconds}')
+                        logger.info(f'update = {heart}')
 
             except Exception as e:
                 logger.error(e)
