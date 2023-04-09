@@ -72,6 +72,6 @@ def main():
                         mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos=0)
                         logger.info(f'Magnitude = {magnitude}')
 
-           except Exception as e:
-    logger.error(f'Failed to connect to server: {e}')
+    except Exception as e:
+        logger.error(f'Failed to connect to server: {e}')
     return
