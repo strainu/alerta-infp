@@ -1,6 +1,6 @@
 {
     "name": "Cutremur Bucuresti",
-    "version": "0.941",
+    "version": "0.942",
     "slug": "alerta-infp",
     "description": "Addon-ul Homeassistant creaza senzorii “Cutremur”, “Magnitudine Cutremur”, “Secunde pana la Bucuresti” folosind datele disponibile la http://alerta.infp.ro",
     "url": "https://github.com/pcman75/alerta-infp",
@@ -18,7 +18,8 @@
         "mqtt_port": "int(1,99999999)",
         "mqtt_user": "str",
         "mqtt_password": "str",
-        "LOG_LEVEL": "list(CRITICAL|ERROR|WARN|INFO|DEBUG)"
+        "LOG_LEVEL": "list(CRITICAL|ERROR|WARN|INFO|DEBUG)",
+        "phpsessid": "str"
     },
     "ingress": false,
     "ingress_port": 0,
