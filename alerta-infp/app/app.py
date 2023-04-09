@@ -39,6 +39,7 @@ def main():
         mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain=True, qos=0)
 
         host = 'http://alerta.infp.ro/'
+        phpsessid = config.get('phpsessid') # Get phpsessid from config.json
         messages = SSEClient(f'{host}server.php', headers={'Cookie': f'PHPSESSID={phpsessid};'})
 
         for msg in messages:
