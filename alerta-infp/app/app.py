@@ -35,7 +35,7 @@ def main():
         mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain = True, qos = 0)
         mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
 
-        cookies = {'CookieName': 'PHPSESSID=bjfvi6v9iu7fjihc9t89hoj856; _gid=GA1.2.612310480.1681073974; _gat=1; _ga_05D600Y05K=GS1.1.1681073974.2.1.1681074477.0.0.0; _ga=GA1.1.422048982.1675891961'} # replace 'CookieName' and 'CookieValue' with your actual cookie name and value
+        cookies = {'PHPSESSID': 'bjfvi6v9iu7fjihc9t89hoj856'} # replace 'CookieName' and 'CookieValue' with your actual cookie name and value
         host = 'http://alerta.infp.ro/server.php?permanent=1'
         messages = SSEClient(host, cookies=cookies)
         for msg in messages:
