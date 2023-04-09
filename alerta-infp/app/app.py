@@ -30,19 +30,6 @@ def main():
         mqttClient.username_pw_set(config["mqtt_user"], config["mqtt_password"])
         mqttClient.will_set("alerta-infp/online", "offline", retain=True, qos=0)
 
-        if 'phpsessid' in config:
-            session_cookie = requests.cookies.RequestsCookieJar()
-            session_cookie.set('PHPSESSID', config['phpsessid'], domain='alerta.infp.ro')
-            session = requests.Session()
-            session.cookies.update(session_cookie)
-            response = session.get('http://alerta.infp.ro/server.php?permanent=1')
-            if response.status_code != 200:
-                logger.error(f'Failed to connect to server: {response.status_code} - {response.reason}')
-                return
-
-        else:
-            logger.warning('PHPSESSID not found in configuration')
-
         mqttClient.connect(config["mqtt_server"], config["mqtt_port"])
         mqttClient.loop_start()
         
@@ -52,7 +39,7 @@ def main():
         mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain=True, qos=0)
 
         host = 'http://alerta.infp.ro/'
-        messages = SSEClient(f'{host}server.php?permanent=1')
+        messages = SSEClient(f'{host}server.php', headers={'Cookie': f'PHPSESSID={phpsessid};'})
 
         for msg in messages:
             try:
