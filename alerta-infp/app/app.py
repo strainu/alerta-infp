@@ -1,5 +1,9 @@
-import math, requests, re, json, logging, pathlib
-
+import math
+import requests
+import re
+import json
+import logging
+import pathlib
 import paho.mqtt.client as mqtt
 from sseclient import SSEClient
 
@@ -17,32 +21,44 @@ def main():
 
         logger = logging.getLogger()
         handler = logging.StreamHandler()
-        formatter = logging.Formatter(
-                '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+        formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         logger.setLevel(logging._nameToLevel[config['LOG_LEVEL']])
 
         mqttClient = mqtt.Client("alerta-infp")
         mqttClient.username_pw_set(config["mqtt_user"], config["mqtt_password"])
-        mqttClient.will_set("alerta-infp/online", "offline", retain = True, qos = 0)
-        
+        mqttClient.will_set("alerta-infp/online", "offline", retain=True, qos=0)
+
+        if 'phpsessid' in config:
+            session_cookie = requests.cookies.RequestsCookieJar()
+            session_cookie.set('PHPSESSID', config['phpsessid'], domain='alerta.infp.ro')
+            session = requests.Session()
+            session.cookies.update(session_cookie)
+            response = session.get('http://alerta.infp.ro/server.php?permanent=1')
+            if response.status_code != 200:
+                logger.error(f'Failed to connect to server: {response.status_code} - {response.reason}')
+                return
+
+        else:
+            logger.warning('PHPSESSID not found in configuration')
+
         mqttClient.connect(config["mqtt_server"], config["mqtt_port"])
         mqttClient.loop_start()
         
-        mqttClient.publish("alerta-infp/online", "online", retain = True, qos = 0)
-        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config", '{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
-        mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain = True, qos = 0)
-        mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
+        mqttClient.publish("alerta-infp/online", "online", retain=True, qos=0)
+        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config", '{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online"}', retain=True, qos=0)
+        mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain=True, qos=0)
+        mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain=True, qos=0)
 
-        cookies = {'PHPSESSID': 'bjfvi6v9iu7fjihc9t89hoj856'} # replace 'CookieName' and 'CookieValue' with your actual cookie name and value
-        host = 'http://alerta.infp.ro/server.php?permanent=1'
-        messages = SSEClient(host, cookies=cookies)
+        host = 'http://alerta.infp.ro/'
+        messages = SSEClient(f'{host}server.php?permanent=1')
+
         for msg in messages:
             try:
-                if(msg.data):
+                if msg.data:
                     message = json.loads(msg.data)
-                    if('err' in message):
+                    if 'err' in message:
                         logger.info('Refreshing connection')
                         break
                     else:
@@ -53,22 +69,5 @@ def main():
 
                         logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
-                        mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
+                        mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos=0)
                         logger.info(f'Magnitude = {magnitude}')
-                        
-                        mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
-                        logger.info(f'earthquake = {earthquake}')
-                        
-                        
-                        mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
-                        logger.info(f'seconds = {seconds}')
-                        logger.info(f'update = {heart}')
-
-            except Exception as e:
-                logger.error(e)
-
-    except Exception as e:
-        logger.error(e)
-
-if __name__ == '__main__':
-    main()
