@@ -45,7 +45,7 @@ def main():
 
         mqttClient.connect(config["mqtt_server"], config["mqtt_port"])
         mqttClient.loop_start()
-        
+
         mqttClient.publish("alerta-infp/online", "online", retain=True, qos=0)
         mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config", '{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online"}', retain=True, qos=0)
         mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain=True, qos=0)
@@ -71,3 +71,5 @@ def main():
 
                         mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos=0)
                         logger.info(f'Magnitude = {magnitude}')
+
+            except Exception as
