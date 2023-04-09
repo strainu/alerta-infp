@@ -56,9 +56,9 @@ def main():
 
         for msg in messages:
             try:
-                if msg.data:
+                if(msg.data):
                     message = json.loads(msg.data)
-                    if 'err' in message:
+                    if('err' in message):
                         logger.info('Refreshing connection')
                         break
                     else:
@@ -69,5 +69,22 @@ def main():
 
                         logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
-                        mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos=0)
-                        logger.info(f'Magnitude = {magnitude
+                        mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
+                        logger.info(f'Magnitude = {magnitude}')
+                        
+                        mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
+                        logger.info(f'earthquake = {earthquake}')
+                        
+                        
+                        mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
+                        logger.info(f'seconds = {seconds}')
+                        logger.info(f'update = {heart}')
+
+            except Exception as e:
+                logger.error(e)
+
+    except Exception as e:
+        logger.error(e)
+
+if __name__ == '__main__':
+    main()
