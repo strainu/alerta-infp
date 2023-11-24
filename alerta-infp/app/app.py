@@ -33,7 +33,7 @@ def main():
         mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config", '{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
         mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain = True, qos = 0)
         mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
-
+        mqttClient.publish("homeassistant/sensor/alerta-infp/heart/config", '{"name":"Ultima actualizare","stat_t":"homeassistant/sensor/alerta-infp/heart/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
         while(1):
             res = requests.get("http://alerta.infp.ro/server.php",    headers= {
                 "accept": "text/event-stream",
@@ -52,8 +52,9 @@ def main():
                 magnitude = float(message["mag"])
                 earthquake = 'ON' if magnitude >= 1. else 'OFF'
                 seconds = float(message["sec"])
+                heart = strg(message["heart"])
 
-                logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
+                logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}  Last update = {heart}')
 
                 mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
                 logger.info(f'Magnitude = {magnitude}')
@@ -63,7 +64,7 @@ def main():
 
                 mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
                 logger.info(f'seconds = {seconds}')
-                logger.info(f'update = {heart}')
+                mqttClient.publish('homeassistant/sensor/alerta-infp/heart/state', seconds, qos = 0)
 
             time.sleep(30) # 30 secunde
     except Exception as e:
