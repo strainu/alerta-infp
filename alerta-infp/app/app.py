@@ -39,7 +39,7 @@ def main():
                 "accept": "text/event-stream",
                 "accept-language": "en-US,en;q=0.9,ro-RO;q=0.8,ro;q=0.7,zh-CN;q=0.6,zh;q=0.5",
                 "cache-control": "no-cache",
-                "cookie": "PHPSESSID=config["phpsessid"]", # set cookie
+                "cookie": f"PHPSESSID={config['phpsessid']}",  # set cookie
                 "Referer": "http://alerta.infp.ro/",
                 "Referrer-Policy": "strict-origin-when-cross-origin"
             })
