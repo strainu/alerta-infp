@@ -25,10 +25,10 @@ def main():
         mqttClient = mqtt.Client("alerta-infp")
         mqttClient.username_pw_set(config["mqtt_user"], config["mqtt_password"])
         mqttClient.will_set("alerta-infp/online", "offline", retain = True, qos = 0)
-        
+
         mqttClient.connect(config["mqtt_server"], config["mqtt_port"])
         mqttClient.loop_start()
-        
+
         mqttClient.publish("alerta-infp/online", "online", retain = True, qos = 0)
         mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config", '{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
         mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain = True, qos = 0)
@@ -57,16 +57,13 @@ def main():
 
                 mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
                 logger.info(f'Magnitude = {magnitude}')
-                
+
                 mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
                 logger.info(f'earthquake = {earthquake}')
-                
+
                 mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
                 logger.info(f'seconds = {seconds}')
 
-                    
-            else:
-                logger.error('Failed to get server connection key')
             timer.sleep(30) # 30 secunde
     except Exception as e:
         logger.error(e)
