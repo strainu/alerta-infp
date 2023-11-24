@@ -64,8 +64,7 @@ def main():
                 mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
                 logger.info(f'seconds = {seconds}')
 
-                    except Exception as e:
-                        logger.error(e)
+                    
             else:
                 logger.error('Failed to get server connection key')
             timer.sleep(30) # 30 secunde
