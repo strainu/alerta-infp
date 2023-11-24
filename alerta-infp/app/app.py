@@ -52,7 +52,7 @@ def main():
                 magnitude = float(message["mag"])
                 earthquake = 'ON' if magnitude >= 1. else 'OFF'
                 seconds = float(message["sec"])
-                heart = strg(message["heart"])
+                heart = str(message["heart"])
 
                 logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}  Last update = {heart}')
 
