@@ -18,7 +18,7 @@
         "mqtt_port": "int(1,99999999)",
         "mqtt_user": "str",
         "mqtt_password": "str",
-        "LOG_LEVEL": "list(CRITICAL|ERROR|WARN|INFO|DEBUG)",
+        "LOG_LEVEL": "list(CRITICAL|ERROR|WARN|INFO|DEBUG)"
         
     },
     "ingress": false,
