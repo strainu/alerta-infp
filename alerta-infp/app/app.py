@@ -72,7 +72,7 @@ def main():
                 mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                 logger.error(e)
 
-            timer.sleep(30) # 30 secunde
+            time.sleep(30) # 30 secunde
     except Exception as e:
         logger.error(e)
 
