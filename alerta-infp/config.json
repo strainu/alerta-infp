@@ -11,7 +11,7 @@
         "mqtt_port": 1883,
         "mqtt_user": "!secret mqtt_username",
         "mqtt_password": "!secret mqtt_password",
-        "LOG_LEVEL": "DEBUG"
+        "LOG_LEVEL": "INFO"
     },
     "schema": {
         "mqtt_server": "str",
