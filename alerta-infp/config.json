@@ -1,6 +1,6 @@
 {
     "name": "Cutremur Bucuresti",
-    "version": "1.00",
+    "version": "1.01",
     "slug": "alerta-infp",
     "description": "Addon-ul Homeassistant creaza senzorii “Cutremur”, “Magnitudine Cutremur”, “Secunde pana la Bucuresti” folosind datele disponibile la http://alerta.infp.ro",
     "url": "https://github.com/blitzu/alerta-infp",
