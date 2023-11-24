@@ -39,7 +39,7 @@ def main():
                 "accept": "text/event-stream",
                 "accept-language": "en-US,en;q=0.9,ro-RO;q=0.8,ro;q=0.7,zh-CN;q=0.6,zh;q=0.5",
                 "cache-control": "no-cache",
-                "cookie": "PHPSESSID=j9lr97p5oqhr0kgodd81frr161", # set cookie
+                "cookie": "PHPSESSID=config["phpsessid"]", # set cookie
                 "Referer": "http://alerta.infp.ro/",
                 "Referrer-Policy": "strict-origin-when-cross-origin"
             })
@@ -47,6 +47,7 @@ def main():
             message = json.loads(res.text[6:])
             if('err' in message):
                 logger.info('Refreshing connection')
+                mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                 break;
             else:
                 magnitude = float(message["mag"])
