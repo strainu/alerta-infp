@@ -66,7 +66,8 @@ def main():
                 mqttClient.publish('homeassistant/sensor/alerta-infp/seconds/state', seconds, qos = 0)
                 logger.info(f'seconds = {seconds}')
                 mqttClient.publish('homeassistant/sensor/alerta-infp/heart/state', seconds, qos = 0)
-
+                logger.info(f'last update = {heart}')
+                mqttClient.publish("alerta-infp/online", "online", retain = True, qos = 0)
             time.sleep(30) # 30 secunde
     except Exception as e:
         logger.error(e)
