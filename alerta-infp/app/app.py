@@ -73,14 +73,14 @@ def main():
                     mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                     logger.info('Refreshing connection')
                     logger.info(f'STATUS = OFFLINE') 
-                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', 'OFF', qos = 0)
+                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', 'ON', qos = 0)
                     continue
                 else:
                     magnitude = float(message["mag"])
                     earthquake = 'ON' if magnitude >= 1. else 'OFF'
                     seconds = float(message["sec"])
                     heart = str(message["heart"])
-                    conex = 'ON' if('HEARTBEAT' in message) else 'OFF'
+                    conex = 'OFF' 
                     
                     logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
@@ -99,13 +99,13 @@ def main():
                     logger.info(f'last update = {heart}')
                     logger.info(f'STATUS = {conex}') 
             except Exception as e:
-                conex = 'OFF'
+                conex = 'ON'
                 mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                 logger.error(e)
                 logger.info(f'STATUS = {conex}') 
-                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', 'OFF', qos = 0)
+                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', conex, qos = 0)
 
-            time.sleep(30) # 30 secunde
+            time.sleep(5) # 5 secunde
     except Exception as e:
         logger.error(e)
 
