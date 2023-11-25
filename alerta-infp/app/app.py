@@ -29,32 +29,19 @@ def main():
         mqttClient.connect(config["mqtt_server"], config["mqtt_port"])
         mqttClient.loop_start()
 
-        # Generați un UUID unic pentru fiecare entitate
-        entity_ids = {
-            "binary_sensor": str(uuid.uuid4()),
-            "sensor_magnitudine": str(uuid.uuid4()),
-            "sensor_seconds": str(uuid.uuid4()),
-            "sensor_online": str(uuid.uuid4()),
-        }
-
         # Configurația entităților MQTT cu ID-urile unice
-        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config",f'{{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',retain=True,qos=0,)
-        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/conexiune/config",f'{{"name":"Stare conexiune INFP","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/conexiune/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',retain=True,qos=0,)
+        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config",f'{{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online","unique_id":"6e6032c9-0130-44be-90e5-d9f8382aa497"}}',retain=True,qos=0,)
+        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/conexiune/config",f'{{"name":"Stare conexiune INFP","dev_cla":"problem","stat_t":"homeassistant/binary_sensor/alerta-infp/conexiune/state","avty_t":"alerta-infp/online","unique_id":"fe66ac2f-93bb-4a96-978c-b28703affe1a"}}',retain=True,qos=0,)
 
-        mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config",f'{{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter","unique_id":"{entity_ids["sensor_magnitudine"]}"}}',retain=True,qos=0,)
+        mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config",f'{{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter","unique_id":"482ec33a-6c1c-4852-9219-e2d9f621c187"}}',retain=True,qos=0,)
         
         mqttClient.publish(
             "homeassistant/sensor/alerta-infp/seconds/config",
-            f'{{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["sensor_seconds"]}"}}',
+            f'{{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online","unique_id":"985a1d19-8791-43bf-b80f-790862aa3153"}}',
             retain=True,
             qos=0,
         )
-        mqttClient.publish(
-            "homeassistant/binary_sensor/alerta-infp-online/config",
-            f'{{"name":"Status addon cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp-online/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',
-            retain=True,
-            qos=0,
-        )
+
         
         # ...
         while(1):
@@ -108,6 +95,10 @@ def main():
             time.sleep(5) # 5 secunde
     except Exception as e:
         logger.error(e)
-
+        conex = 'ON'
+        mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
+        logger.error(e)
+        logger.info(f'STATUS = {conex}') 
+        mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', conex, qos = 0)
 if __name__ == '__main__':
     main()
