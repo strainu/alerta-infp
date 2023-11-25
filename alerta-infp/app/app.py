@@ -74,7 +74,7 @@ def main():
                     mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
                     logger.info(f'Magnitude = {magnitude}')
 
-                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', 'ON', qos = 0)
+                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', conex, qos = 0)
                     
                     
                     mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
