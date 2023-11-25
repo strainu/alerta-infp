@@ -29,12 +29,36 @@ def main():
         mqttClient.connect(config["mqtt_server"], config["mqtt_port"])
         mqttClient.loop_start()
 
-        mqttClient.publish("alerta-infp/online", "online", retain = True, qos = 0)
-        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config", '{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
-        mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config", '{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter"}', retain = True, qos = 0)
-        mqttClient.publish("homeassistant/sensor/alerta-infp/seconds/config", '{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
-        #mqttClient.publish("homeassistant/sensor/alerta-infp/heart/config", '{"name":"Ultima actualizare","stat_t":"homeassistant/sensor/alerta-infp/heart/state","avty_t":"alerta-infp/online"}', retain = True, qos = 0)
+        # Generați un UUID unic pentru fiecare entitate
+        entity_ids = {
+            "binary_sensor": str(uuid.uuid4()),
+            "sensor_magnitudine": str(uuid.uuid4()),
+            "sensor_seconds": str(uuid.uuid4()),
+        }
 
+        # Configurația entităților MQTT cu ID-urile unice
+        mqttClient.publish(
+            "homeassistant/binary_sensor/alerta-infp/config",
+            f'{{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',
+            retain=True,
+            qos=0,
+        )
+
+        mqttClient.publish(
+            "homeassistant/sensor/alerta-infp/magnitudine/config",
+            f'{{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter","unique_id":"{entity_ids["sensor_magnitudine"]}"}}',
+            retain=True,
+            qos=0,
+        )
+
+        mqttClient.publish(
+            "homeassistant/sensor/alerta-infp/seconds/config",
+            f'{{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["sensor_seconds"]}"}}',
+            retain=True,
+            qos=0,
+        )
+
+        # ...
         while(1):
             try:
                 res = requests.get("http://alerta.infp.ro/server.php",    headers= {
