@@ -34,6 +34,7 @@ def main():
             "binary_sensor": str(uuid.uuid4()),
             "sensor_magnitudine": str(uuid.uuid4()),
             "sensor_seconds": str(uuid.uuid4()),
+            "sensor_online": str(uuid.uuid4()),
         }
 
         # Configurația entităților MQTT cu ID-urile unice
@@ -57,6 +58,12 @@ def main():
             retain=True,
             qos=0,
         )
+        mqttClient.publish(
+            "homeassistant/binary_sensor/alerta-infp-online/config",
+            f'{{"name":"Status addon cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp-online/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',
+            retain=True,
+            qos=0,
+        )
 
         # ...
         while(1):
@@ -74,17 +81,23 @@ def main():
                 if('err' in message):
                     mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                     logger.info('Refreshing connection')
+                    logger.info(f'STATUS = OFFLINE') 
+                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', f'OFFLINE', qos = 0)
                     continue
                 else:
                     magnitude = float(message["mag"])
                     earthquake = 'ON' if magnitude >= 1. else 'OFF'
                     seconds = float(message["sec"])
                     heart = str(message["heart"])
+                    
                     logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
                     mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
                     logger.info(f'Magnitude = {magnitude}')
 
+                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', f'ONLINE', qos = 0)
+                    logger.info(f'STATUS = ONLINE') 
+                    
                     mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
                     logger.info(f'earthquake = {earthquake}')
 
@@ -95,6 +108,8 @@ def main():
             except Exception as e:
                 mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                 logger.error(e)
+                logger.info(f'STATUS = OFFLINE') 
+                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', f'OFFLINE', qos = 0)
 
             time.sleep(30) # 30 secunde
     except Exception as e:
