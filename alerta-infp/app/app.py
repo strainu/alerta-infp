@@ -38,20 +38,11 @@ def main():
         }
 
         # Configurația entităților MQTT cu ID-urile unice
-        mqttClient.publish(
-            "homeassistant/binary_sensor/alerta-infp/config",
-            f'{{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',
-            retain=True,
-            qos=0,
-        )
+        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/config",f'{{"name":"Cutremur","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',retain=True,qos=0,)
+        mqttClient.publish("homeassistant/binary_sensor/alerta-infp/conexiune/config",f'{{"name":"Stare conexiune INFP","dev_cla":"safety","stat_t":"homeassistant/binary_sensor/alerta-infp/conexiune/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["binary_sensor"]}"}}',retain=True,qos=0,)
 
-        mqttClient.publish(
-            "homeassistant/sensor/alerta-infp/magnitudine/config",
-            f'{{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter","unique_id":"{entity_ids["sensor_magnitudine"]}"}}',
-            retain=True,
-            qos=0,
-        )
-
+        mqttClient.publish("homeassistant/sensor/alerta-infp/magnitudine/config",f'{{"name":"Magnitudine Cutremur","stat_t":"homeassistant/sensor/alerta-infp/magnitudine/state","avty_t":"alerta-infp/online","unit_of_meas":"Richter","unique_id":"{entity_ids["sensor_magnitudine"]}"}}',retain=True,qos=0,)
+        
         mqttClient.publish(
             "homeassistant/sensor/alerta-infp/seconds/config",
             f'{{"name":"Secunde pana la Bucuresti","stat_t":"homeassistant/sensor/alerta-infp/seconds/state","avty_t":"alerta-infp/online","unique_id":"{entity_ids["sensor_seconds"]}"}}',
@@ -64,7 +55,7 @@ def main():
             retain=True,
             qos=0,
         )
-
+        
         # ...
         while(1):
             try:
@@ -82,21 +73,21 @@ def main():
                     mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                     logger.info('Refreshing connection')
                     logger.info(f'STATUS = OFFLINE') 
-                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', f'OFFLINE', qos = 0)
+                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', 'OFF', qos = 0)
                     continue
                 else:
                     magnitude = float(message["mag"])
                     earthquake = 'ON' if magnitude >= 1. else 'OFF'
                     seconds = float(message["sec"])
                     heart = str(message["heart"])
-                    conex = 'ON'
+                    conex = 'ON' if('HEARTBEAT' in message) else 'OFF'
                     
                     logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
                     mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
                     logger.info(f'Magnitude = {magnitude}')
 
-                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', conex, qos = 0)
+                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', conex, qos = 0)
                     
                     
                     mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
@@ -108,11 +99,11 @@ def main():
                     logger.info(f'last update = {heart}')
                     logger.info(f'STATUS = ONLINE') 
             except Exception as e:
-                conex = 'OFF'
+                
                 mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                 logger.error(e)
                 logger.info(f'STATUS = OFFLINE') 
-                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', conex, qos = 0)
+                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', 'OFF', qos = 0)
 
             time.sleep(30) # 30 secunde
     except Exception as e:
