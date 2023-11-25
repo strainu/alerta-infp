@@ -97,12 +97,12 @@ def main():
                     mqttClient.publish("alerta-infp/online", "online", retain = True, qos = 0)
                     logger.info(f'seconds = {seconds}')
                     logger.info(f'last update = {heart}')
-                    logger.info(f'STATUS = ONLINE') 
+                    logger.info(f'STATUS = {conex}') 
             except Exception as e:
-                
+                conex = 'OFF'
                 mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                 logger.error(e)
-                logger.info(f'STATUS = OFFLINE') 
+                logger.info(f'STATUS = {conex}') 
                 mqttClient.publish('homeassistant/binary_sensor/alerta-infp/conexiune/state', 'OFF', qos = 0)
 
             time.sleep(30) # 30 secunde
