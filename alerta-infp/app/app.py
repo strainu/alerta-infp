@@ -89,14 +89,15 @@ def main():
                     earthquake = 'ON' if magnitude >= 1. else 'OFF'
                     seconds = float(message["sec"])
                     heart = str(message["heart"])
+                    conex = 'ON'
                     
                     logger.debug(f'Magnitude = {magnitude} seconds = {seconds} earthquake = {earthquake}')
 
                     mqttClient.publish('homeassistant/sensor/alerta-infp/magnitudine/state', magnitude, qos = 0)
                     logger.info(f'Magnitude = {magnitude}')
 
-                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', f'ONLINE', qos = 0)
-                    logger.info(f'STATUS = ONLINE') 
+                    mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', conex, qos = 0)
+                    
                     
                     mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', earthquake, qos = 0)
                     logger.info(f'earthquake = {earthquake}')
@@ -105,11 +106,13 @@ def main():
                     mqttClient.publish("alerta-infp/online", "online", retain = True, qos = 0)
                     logger.info(f'seconds = {seconds}')
                     logger.info(f'last update = {heart}')
+                    logger.info(f'STATUS = ONLINE') 
             except Exception as e:
+                conex = 'OFF'
                 mqttClient.publish("alerta-infp/online", "offline", retain = True, qos = 0)
                 logger.error(e)
                 logger.info(f'STATUS = OFFLINE') 
-                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', f'OFFLINE', qos = 0)
+                mqttClient.publish('homeassistant/binary_sensor/alerta-infp/state', conex, qos = 0)
 
             time.sleep(30) # 30 secunde
     except Exception as e:
