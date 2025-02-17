@@ -6,7 +6,7 @@ ENV LANG C.UTF-8
 WORKDIR /app
 RUN apk add --update --no-cache dumb-init python3 py3-pip
 
-RUN pip3 install --no-cache-dir -U requests paho-mqtt sseclient
+RUN pip3 install --break-system-packages --no-cache-dir -U requests paho-mqtt sseclient
 COPY /app/ /app/
 COPY start.sh /app/start.sh
 
